@@ -20,6 +20,33 @@ final class AnnouncementListViewModel: ObservableObject {
     private let repository: any TactRepositoryProtocol
     @Published private var hiddenAnnouncementIDs: Set<String>
     private var hiddenContentObserver: NSObjectProtocol?
+    private static let surveyRow = Row(
+        announcement: Announcement(
+            id: "survey-request-2026-06",
+            courseID: "tact-companion",
+            title: "TACT Companion 利用者アンケートへのご協力のお願い",
+            body: """
+            TACT Companionをご利用いただきありがとうございます。
+
+            今後の改善の参考にするため、利用者アンケートを実施しています。
+
+            回答時間は2〜3分程度です。
+            使いやすかった点や改善してほしい点など、率直なご意見をいただけると大変助かります。
+
+            いただいた回答は、TACT Companionの改善以外の目的には使用しません。
+
+            ご協力よろしくお願いいたします。
+
+            【アンケートフォーム】
+            https://docs.google.com/forms/d/e/1FAIpQLSd6majcM6ySPmklB5NXxY36rXkWbHlSYbbV1Uspw2NNAPKUsA/viewform?usp=header
+            """,
+            publishedAt: Date(timeIntervalSince1970: 1_781_539_200),
+            tactURL: URL(
+                string: "https://docs.google.com/forms/d/e/1FAIpQLSd6majcM6ySPmklB5NXxY36rXkWbHlSYbbV1Uspw2NNAPKUsA/viewform?usp=header"
+            )!
+        ),
+        courseTitle: "TACT Companion"
+    )
 
     init(repository: any TactRepositoryProtocol) {
         self.repository = repository
@@ -42,11 +69,18 @@ final class AnnouncementListViewModel: ObservableObject {
     }
 
     var visibleAnnouncements: [Row] {
-        announcements.filter { !hiddenAnnouncementIDs.contains($0.id) }
+        ([Self.surveyRow] + announcements)
+            .filter { !hiddenAnnouncementIDs.contains($0.id) }
+            .sorted {
+                $0.announcement.publishedAt >
+                    $1.announcement.publishedAt
+            }
     }
 
     var hiddenAnnouncementCount: Int {
-        announcements.filter { hiddenAnnouncementIDs.contains($0.id) }.count
+        ([Self.surveyRow] + announcements)
+            .filter { hiddenAnnouncementIDs.contains($0.id) }
+            .count
     }
 
     func hide(_ row: Row) {
@@ -55,7 +89,9 @@ final class AnnouncementListViewModel: ObservableObject {
     }
 
     func restoreHiddenAnnouncements() {
-        hiddenAnnouncementIDs.removeAll()
+        let announcementIDs = Set(announcements.map(\.id))
+            .union([Self.surveyRow.id])
+        hiddenAnnouncementIDs.subtract(announcementIDs)
         saveHiddenAnnouncements()
     }
 

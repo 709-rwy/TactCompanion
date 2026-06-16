@@ -425,6 +425,26 @@ private struct CourseAnnouncementRow: View {
                             .foregroundStyle(.primary)
                             .textSelection(.enabled)
                     }
+
+                    let links = announcement.bodyLinks
+                    if !links.isEmpty {
+                        Divider()
+                        ForEach(links, id: \.self) { url in
+                            Button {
+                                browserDestination = BrowserDestination(url: url)
+                            } label: {
+                                Label(
+                                    linkTitle(for: url),
+                                    systemImage: "link"
+                                )
+                                .font(.subheadline)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.blue)
+                        }
+                    }
                     Divider()
                 }
                 .fixedSize(horizontal: false, vertical: true)
@@ -474,7 +494,9 @@ private struct CourseAnnouncementRow: View {
             NavigationStack {
                 TactWebDestination(
                     url: destination.url,
-                    title: announcement.title
+                    title: destination.url == announcement.tactURL
+                        ? announcement.title
+                        : destination.url.host ?? "リンク"
                 )
             }
         }
@@ -488,6 +510,13 @@ private struct CourseAnnouncementRow: View {
         withTransaction(transaction) {
             isExpanded.toggle()
         }
+    }
+
+    private func linkTitle(for url: URL) -> String {
+        if let host = url.host, !host.isEmpty {
+            return host
+        }
+        return url.absoluteString
     }
 }
 

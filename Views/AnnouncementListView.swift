@@ -10,9 +10,9 @@ struct AnnouncementListView: View {
 
     var body: some View {
         Group {
-            if viewModel.isLoading && viewModel.announcements.isEmpty {
+            if viewModel.isLoading && viewModel.visibleAnnouncements.isEmpty {
                 ProgressView("お知らせを取得中")
-            } else if viewModel.announcements.isEmpty {
+            } else if viewModel.visibleAnnouncements.isEmpty {
                 ContentUnavailableView(
                     "お知らせはありません",
                     systemImage: "megaphone",
@@ -74,11 +74,17 @@ struct AnnouncementListView: View {
 }
 
 private struct InlineAnnouncementRow: View {
+    private struct BrowserDestination: Identifiable {
+        let id = UUID()
+        let url: URL
+    }
+
     let row: AnnouncementListViewModel.Row
     let isLoading: Bool
     let loadBody: () async -> Void
     let hide: () -> Void
     @State private var isExpanded = false
+    @State private var browserDestination: BrowserDestination?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -120,6 +126,26 @@ private struct InlineAnnouncementRow: View {
                         Text(row.announcement.displayBody)
                             .textSelection(.enabled)
                     }
+
+                    let links = row.announcement.bodyLinks
+                    if !links.isEmpty {
+                        Divider()
+                        ForEach(links, id: \.self) { url in
+                            Button {
+                                browserDestination = BrowserDestination(url: url)
+                            } label: {
+                                Label(
+                                    linkTitle(for: url),
+                                    systemImage: "link"
+                                )
+                                .font(.subheadline)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.blue)
+                        }
+                    }
                     Divider()
                 }
                 .fixedSize(horizontal: false, vertical: true)
@@ -155,6 +181,14 @@ private struct InlineAnnouncementRow: View {
             guard expanded, row.announcement.body.isEmpty else { return }
             Task { await loadBody() }
         }
+        .sheet(item: $browserDestination) { destination in
+            NavigationStack {
+                TactWebDestination(
+                    url: destination.url,
+                    title: destination.url.host ?? "リンク"
+                )
+            }
+        }
     }
 
     private func toggleExpanded() {
@@ -165,5 +199,12 @@ private struct InlineAnnouncementRow: View {
         withTransaction(transaction) {
             isExpanded.toggle()
         }
+    }
+
+    private func linkTitle(for url: URL) -> String {
+        if let host = url.host, !host.isEmpty {
+            return host
+        }
+        return url.absoluteString
     }
 }
