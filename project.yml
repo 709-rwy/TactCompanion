@@ -1,0 +1,42 @@
+name: TACTCompanion
+options:
+  bundleIdPrefix: jp.ac.thers
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+targets:
+  TACTCompanion:
+    type: application
+    platform: iOS
+    sources:
+      - TACTCompanion
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.ac.thers.TACTCompanion
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: TACT Companion
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_ENTITLEMENTS: TACTCompanion/TACTCompanion.entitlements
+    dependencies:
+      - target: TACTCompanionWidget
+        embed: true
+  TACTCompanionWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - TACTCompanionWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: jp.ac.thers.TACTCompanion.widget
+        INFOPLIST_FILE: TACTCompanionWidget-Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+        CODE_SIGN_ENTITLEMENTS: TACTCompanionWidget/TACTCompanionWidget.entitlements
+        TARGETED_DEVICE_FAMILY: "1,2"

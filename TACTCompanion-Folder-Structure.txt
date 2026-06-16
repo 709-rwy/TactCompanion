@@ -1,0 +1,80 @@
+TACTCompanion/
+|-- .gitattributes
+|-- .gitignore
+|-- README.md
+|-- project.yml
+|-- TACTCompanion-Swift-Sources.txt
+|-- TACTCompanion-Folder-Structure.txt
+|-- TACTCompanion.xcodeproj/
+|   |-- project.pbxproj
+|   |-- project.xcworkspace/
+|   |   |-- contents.xcworkspacedata
+|   |   `-- xcshareddata/
+|   |       `-- swiftpm/
+|   |           `-- configuration/
+|   `-- xcshareddata/
+|       `-- xcschemes/
+|           `-- TACTCompanion.xcscheme
+|-- TACTCompanion/
+|   |-- TACTCompanion.entitlements
+|   |-- TACTCompanionApp.swift
+|   |-- Assets.xcassets/
+|   |   |-- Contents.json
+|   |   `-- AppIcon.appiconset/
+|   |       |-- AppIcon-1024.png
+|   |       `-- Contents.json
+|   |-- Models/
+|   |   |-- Announcement.swift
+|   |   |-- AppRefreshController.swift
+|   |   |-- AppSettings.swift
+|   |   |-- Assignment.swift
+|   |   |-- Course.swift
+|   |   |-- CourseActivitySummary.swift
+|   |   |-- CourseMaterial.swift
+|   |   |-- DeadlineItem.swift
+|   |   |-- DisplayDateFormatter.swift
+|   |   `-- Quiz.swift
+|   |-- Repositories/
+|   |   `-- TactRepository.swift
+|   |-- Services/
+|   |   |-- DeadlineNotificationService.swift
+|   |   |-- HiddenContentStore.swift
+|   |   |-- NotificationDelegate.swift
+|   |   |-- TactAnnouncementService.swift
+|   |   |-- TactAssignmentService.swift
+|   |   |-- TactCookieStore.swift
+|   |   |-- TactHTMLParser.swift
+|   |   |-- TactMaterialService.swift
+|   |   |-- TactPersistentCache.swift
+|   |   |-- TactQuizService.swift
+|   |   |-- TactSessionService.swift
+|   |   `-- WidgetSnapshotStore.swift
+|   |-- ViewModels/
+|   |   |-- AnnouncementListViewModel.swift
+|   |   |-- AssignmentListViewModel.swift
+|   |   |-- AuthenticationViewModel.swift
+|   |   |-- CourseDetailViewModel.swift
+|   |   |-- DeadlineListViewModel.swift
+|   |   `-- TimetableViewModel.swift
+|   `-- Views/
+|       |-- AnnouncementListView.swift
+|       |-- AssignmentListView.swift
+|       |-- CourseDetailView.swift
+|       |-- DeadlineCalendarView.swift
+|       |-- DeadlineListView.swift
+|       |-- LoginView.swift
+|       |-- MainTabView.swift
+|       |-- RootView.swift
+|       |-- SettingsView.swift
+|       |-- TactWebView.swift
+|       `-- TimetableView.swift
+|-- TACTCompanionWidget-Info.plist
+`-- TACTCompanionWidget/
+    |-- TACTCompanionWidget.entitlements
+    `-- TACTCompanionWidget.swift
+
+Excluded:
+- Git internal data (.git/)
+- Xcode user-specific data (xcuserdata/)
+- macOS metadata files (.DS_Store)
+- Build products and DerivedData
