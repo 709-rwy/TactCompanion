@@ -1,7 +1,7 @@
 import Foundation
 
 struct TactMaterialService: Sendable {
-    struct Result: Sendable {
+    struct Result: Codable, Sendable {
         let materials: [CourseMaterial]
         let resourcesURL: URL?
     }

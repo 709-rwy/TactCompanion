@@ -6,6 +6,48 @@ struct TactPersistentCache: Codable {
     var assignments: [String: [Assignment]] = [:]
     var quizzes: [String: [Quiz]] = [:]
     var announcements: [String: [Announcement]] = [:]
+    var materials: [String: TactMaterialService.Result] = [:]
+
+    init(
+        seasonID: String,
+        courses: [Course]? = nil,
+        assignments: [String: [Assignment]] = [:],
+        quizzes: [String: [Quiz]] = [:],
+        announcements: [String: [Announcement]] = [:],
+        materials: [String: TactMaterialService.Result] = [:]
+    ) {
+        self.seasonID = seasonID
+        self.courses = courses
+        self.assignments = assignments
+        self.quizzes = quizzes
+        self.announcements = announcements
+        self.materials = materials
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        seasonID = try container.decode(String.self, forKey: .seasonID)
+        courses = try container.decodeIfPresent(
+            [Course].self,
+            forKey: .courses
+        )
+        assignments = try container.decodeIfPresent(
+            [String: [Assignment]].self,
+            forKey: .assignments
+        ) ?? [:]
+        quizzes = try container.decodeIfPresent(
+            [String: [Quiz]].self,
+            forKey: .quizzes
+        ) ?? [:]
+        announcements = try container.decodeIfPresent(
+            [String: [Announcement]].self,
+            forKey: .announcements
+        ) ?? [:]
+        materials = try container.decodeIfPresent(
+            [String: TactMaterialService.Result].self,
+            forKey: .materials
+        ) ?? [:]
+    }
 }
 
 enum TactPersistentCacheStore {

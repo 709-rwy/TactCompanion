@@ -56,6 +56,7 @@ actor TactRepository: TactRepositoryProtocol {
         self.assignmentCache = cache.assignments
         self.quizCache = cache.quizzes
         self.announcementCache = cache.announcements
+        self.materialCache = cache.materials
 
         let defaults = UserDefaults.standard
         if defaults.integer(forKey: Self.quizCacheVersionKey) <
@@ -269,11 +270,63 @@ actor TactRepository: TactRepositoryProtocol {
         materialRequests[courseID] = request
         defer { materialRequests[courseID] = nil }
         let result = try await request.value
-        materialCache[courseID] = result
-        return result
+        let merged = mergeMaterialResult(
+            cached: persistentCache.materials[courseID],
+            fresh: result
+        )
+        materialCache[courseID] = merged
+        persistentCache.materials[courseID] = merged
+        savePersistentCache()
+        return merged
     }
 
     private func savePersistentCache() {
         TactPersistentCacheStore.save(persistentCache)
+    }
+
+    private func mergeMaterialResult(
+        cached: TactMaterialService.Result?,
+        fresh: TactMaterialService.Result
+    ) -> TactMaterialService.Result {
+        guard let cached else { return fresh }
+        return TactMaterialService.Result(
+            materials: mergeMaterials(
+                cached: cached.materials,
+                fresh: fresh.materials
+            ),
+            resourcesURL: fresh.resourcesURL ?? cached.resourcesURL
+        )
+    }
+
+    private func mergeMaterials(
+        cached: [CourseMaterial],
+        fresh: [CourseMaterial]
+    ) -> [CourseMaterial] {
+        var valuesByID = Dictionary(
+            uniqueKeysWithValues: cached.map { ($0.id, $0) }
+        )
+
+        for freshMaterial in fresh {
+            if var cachedMaterial = valuesByID[freshMaterial.id] {
+                cachedMaterial.children = mergeMaterials(
+                    cached: cachedMaterial.children,
+                    fresh: freshMaterial.children
+                )
+                valuesByID[freshMaterial.id] = cachedMaterial
+            } else {
+                valuesByID[freshMaterial.id] = freshMaterial
+            }
+        }
+
+        return valuesByID.values.sorted {
+            if $0.kind == .folder, $1.kind != .folder {
+                return true
+            }
+            if $0.kind != .folder, $1.kind == .folder {
+                return false
+            }
+            return $0.title.localizedStandardCompare($1.title) ==
+                .orderedAscending
+        }
     }
 }

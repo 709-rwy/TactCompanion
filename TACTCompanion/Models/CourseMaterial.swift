@@ -1,7 +1,7 @@
 import Foundation
 
-struct CourseMaterial: Identifiable, Hashable, Sendable {
-    enum Kind: Hashable, Sendable {
+struct CourseMaterial: Identifiable, Codable, Hashable, Sendable {
+    enum Kind: Codable, Hashable, Sendable {
         case pdf
         case html
         case folder
